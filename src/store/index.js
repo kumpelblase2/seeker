@@ -37,7 +37,14 @@ export default new Vuex.Store({
             tags.forEach(tag => state.tags.push(tag));
         },
         addStreams(state, streams) {
-            streams.forEach(stream => state.streams.push(stream));
+            streams.forEach(stream => {
+                const existing = state.streams.findIndex(existingStream => existingStream.user_id === stream.user_id);
+                if(existing >= 0) {
+                    Object.assign(state.streams[existing], stream);
+                } else {
+                    state.streams.push(stream)
+                }
+            });
         },
         addGames(state, games) {
             games.forEach(game => state.games.push(game));
