@@ -1,4 +1,4 @@
-# twitch-browse
+# seeker
 
 This is an alternative to the browse page on twitch. Twitch only allows "selecting" certain tags to look for, not "filtering"
  out tags or games you don't care about. Not to mention, you cannot hide streams you're not interested in. This is what this 
