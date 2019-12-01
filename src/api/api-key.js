@@ -1,0 +1,1 @@
+export const TWITCH_API_CLIENT_ID = "INSERT_KEY_HERE";

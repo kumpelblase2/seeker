@@ -1,15 +1,162 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VuexPersistence from 'vuex-persist'
+import * as twitch from "../api/twitch";
+import { getGameDisplayName, getTagDisplayName } from "./func";
 
-Vue.use(Vuex)
+const vuexLocal = new VuexPersistence({
+    storage: window.localStorage,
+    reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames }) => ({
+        tags,
+        ignoredTags,
+        ignoredStreams,
+        games,
+        streamNames,
+        ignoredGames
+    })
+});
+
+Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+    state: {
+        cursor: null,
+        tags: [],
+        streamNames: [], // [{name, id}]
+        streams: [],
+        games: [],
+        ignoredTags: [],
+        ignoredStreams: [],
+        ignoredGames: []
+    },
+    mutations: {
+        updateCursor(state, cursor) {
+            state.cursor = cursor;
+        },
+        addTags(state, tags) {
+            tags.forEach(tag => state.tags.push(tag));
+        },
+        addStreams(state, streams) {
+            streams.forEach(stream => state.streams.push(stream));
+        },
+        addGames(state, games) {
+            games.forEach(game => state.games.push(game));
+        },
+        addIgnoredStream(state, streamId) {
+            if(!state.ignoredStreams.includes(streamId)) {
+                state.ignoredStreams.push(streamId);
+            }
+        },
+        addIgnoredTag(state, tagId) {
+            if(!state.ignoredTags.includes(tagId)) {
+                state.ignoredTags.push(tagId);
+            }
+        },
+        addIgnoredGame(state, gameId) {
+            if(!state.ignoredGames.includes(gameId)) {
+                state.ignoredGames.push(gameId);
+            }
+        },
+        addStreamNameLook(state, { name, id }) {
+            if(state.streamNames.findIndex(nameMapping => nameMapping.id === id) < 0) {
+                state.streamNames.push({ name, id });
+            }
+        },
+        removeIgnoredStream(state, streamId) {
+            const index = state.ignoredStreams.findIndex(id => id === streamId);
+            if(index >= 0) {
+                state.ignoredStreams.splice(index, 1);
+            }
+        },
+        removeIgnoredTag(state, tagId) {
+            const index = state.ignoredTags.findIndex(id => id === tagId);
+            if(index >= 0) {
+                state.ignoredTags.splice(index, 1);
+            }
+        },
+        removeIgnoredGame(state, gameId) {
+            const index = state.ignoredGames.findIndex(id => id === gameId);
+            if(index >= 0) {
+                state.ignoredGames.splice(index, 1);
+            }
+        }
+    },
+    getters: {
+        visibleStreams(state) {
+            return state.streams.filter(stream => {
+                return state.ignoredTags.every(tag => !stream.tag_ids.includes(tag)) &&
+                    state.ignoredStreams.every(streamId => streamId !== stream.user_id) &&
+                    state.ignoredGames.every(gameId => gameId !== stream.game_id);
+            });
+        },
+        tagById(state) {
+            return (id) => state.tags.find(tag => tag.tag_id === id);
+        },
+        getGame(state) {
+            return (id) => state.games.find(game => game.id === id);
+        },
+        getStreamName(state) {
+            return (id) => (state.streamNames.find(nameMapping => nameMapping.id === id) || {}).name || id;
+        },
+        hasTag(state) {
+            return (id) => state.tags.find(tag => tag.tag_id === id) != null;
+        },
+        hasGame(state) {
+            return (id) => state.games.find(game => game.game_id === id) != null;
+        }
+    },
+    actions: {
+        async loadStreams({ commit, state, dispatch, getters }) {
+            const response = await twitch.getStreams(state.cursor);
+            const streams = response.data;
+            commit('updateCursor', response.pagination.cursor);
+            commit('addStreams', streams);
+            streams.map(stream => ({
+                name: stream.user_name,
+                id: stream.user_id
+            })).forEach(mapping => commit('addStreamNameLook', mapping));
+
+            const games = streams.map(stream => stream.game_id).filter(gameId => !getters.hasGame(gameId));
+            dispatch('loadGames', games);
+
+            const tags = [...new Set(streams.flatMap(stream => stream.tag_ids))].filter(tagId => !getters.hasTag(tagId));
+            dispatch('loadTags', tags);
+        },
+        async loadTags({ commit, state }, tagIds) {
+            let cursor = null;
+            while(true) {
+                const response = await twitch.getTags(tagIds, cursor);
+                const tags = response.data;
+                cursor = response.pagination.cursor;
+                commit('addTags', tags);
+                if(tags.length < 99) {
+                    break;
+                }
+            }
+        },
+        async loadGames({ commit }, gameIds) {
+            const response = await twitch.getGames(gameIds);
+            commit('addGames', response.data);
+        },
+        async ignoreStreamByName({ commit }, userName) {
+            const response = await twitch.getStreamFromName(userName);
+            if(response.data.length > 0) {
+                commit('addIgnoredStream', response.data[0].id);
+            }
+        },
+        ignoreTagByName({ state, commit }, tagName) {
+            const foundTag = state.tags.find(tag => getTagDisplayName(tag) === tagName);
+            if(foundTag != null) {
+                commit('addIgnoredTag', foundTag.tag_id);
+            }
+        },
+        ignoreGameByName({state, commit}, gameName) {
+            const foundGame = state.games.find(game => getGameDisplayName(game) === gameName);
+            if(foundGame != null) {
+                commit('addIgnoredGame', foundGame.id);
+            }
+        }
+    },
+    modules: {},
+    plugins: [vuexLocal.plugin]
 })
