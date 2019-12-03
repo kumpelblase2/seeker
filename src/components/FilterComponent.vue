@@ -7,7 +7,7 @@
         </div>
         <div class="row">
             <div class="col">
-                <b-badge v-for="streamId in ignoredStreams" :key="streamId" class="badge">
+                <b-badge v-for="streamId in ignoredStreams" :key="streamId">
                     {{streamDisplayName(streamId)}}
                     <b-link @click="removeIgnoredStream(streamId)">X</b-link>
                 </b-badge>
