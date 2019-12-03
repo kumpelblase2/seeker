@@ -7,22 +7,22 @@
         </div>
         <div class="row">
             <div class="col">
-                <div v-for="streamId in ignoredStreams">
+                <b-badge v-for="streamId in ignoredStreams" :key="streamId" class="badge">
                     {{streamDisplayName(streamId)}}
                     <b-link @click="removeIgnoredStream(streamId)">X</b-link>
-                </div>
+                </b-badge>
             </div>
             <div class="col">
-                <div v-for="tagId in ignoredTags">
+                <b-badge v-for="tagId in ignoredTags" :key="tagId">
                     {{tagDisplayName(tagId)}}
                     <b-link @click="removeIgnoredTag(tagId)">X</b-link>
-                </div>
+                </b-badge>
             </div>
             <div class="col">
-                <div v-for="gameId in ignoredGames">
+                <b-badge v-for="gameId in ignoredGames" :key="gameId">
                     {{gameDisplayName(gameId)}}
                     <b-link @click="removeIgnoredGame(gameId)">X</b-link>
-                </div>
+                </b-badge>
             </div>
         </div>
     </div>
@@ -74,5 +74,7 @@
 </script>
 
 <style scoped>
-
+    .badge {
+        margin-right: 3px;
+    }
 </style>
