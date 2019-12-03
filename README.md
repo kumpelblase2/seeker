@@ -11,13 +11,9 @@ new and interesting streamers.
 First, you need an API client ID from Twitch, which you can get by creating an application 
 [here](https://dev.twitch.tv/console/apps/create). You can then paste inside `src/api/api-key.js`.
 
-Then you can install the required dependencies using `npm`:
+Then you can install the required dependencies using `npm ci` and start it using `npm run serve`:
 ```shell script
-$ npm install
-```
-
-And start it by running:
-```shell script
+$ npm ci
 $ npm run serve
 ```
 
