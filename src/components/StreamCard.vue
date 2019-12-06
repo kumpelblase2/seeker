@@ -3,7 +3,6 @@
         <template v-slot:header>
             <b-card-img-lazy :src="thumbnail" />
         </template>
-        <b-card-body>
             <b-link :href="streamLink">
                 <b-card-title>{{stream.title}}</b-card-title>
                 <b-card-sub-title>{{stream.user_name}} - {{stream.viewer_count}}</b-card-sub-title>
@@ -12,7 +11,6 @@
             <b-card-text>
                 <b-badge v-for="tagId in stream.tag_ids" variant="light" :key="tagId">{{getTagDisplayName(tagId)}}</b-badge>
             </b-card-text>
-        </b-card-body>
         <b-button @click="ignoreStream" variant="outline-light">Ignore</b-button>
     </b-card>
 </template>
@@ -53,6 +51,5 @@
 <style scoped>
     .huge-header-img {
         padding: 0 !important;
-        height: ;
     }
 </style>
