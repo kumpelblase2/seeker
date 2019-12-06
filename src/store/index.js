@@ -64,10 +64,11 @@ export default new Vuex.Store({
                 state.ignoredGames.push(gameId);
             }
         },
-        addStreamNameLook(state, { name, id }) {
-            if(state.streamNames.findIndex(nameMapping => nameMapping.id === id) < 0) {
-                state.streamNames.push({ name, id });
-            }
+        addStreamNameLook(state, names) {
+            const unknown = names.filter(({ _, id }) =>
+                state.streamNames.findIndex(nameMapping => nameMapping.id === id) < 0);
+
+            state.streamNames.push(...unknown);
         },
         removeIgnoredStream(state, streamId) {
             const index = state.ignoredStreams.findIndex(id => id === streamId);
@@ -118,10 +119,8 @@ export default new Vuex.Store({
             const streams = response.data;
             commit('updateCursor', response.pagination.cursor);
             commit('addStreams', streams);
-            streams.map(stream => ({
-                name: stream.user_name,
-                id: stream.user_id
-            })).forEach(mapping => commit('addStreamNameLook', mapping));
+            const nameMappings = streams.map(stream => ({ name: stream.user_name, id: stream.user_id }));
+            commit('addStreamNameLook', nameMappings);
 
             const games = streams.map(stream => stream.game_id).filter(gameId => !getters.hasGame(gameId));
             dispatch('loadGames', games);
@@ -157,7 +156,7 @@ export default new Vuex.Store({
                 commit('addIgnoredTag', foundTag.tag_id);
             }
         },
-        ignoreGameByName({state, commit}, gameName) {
+        ignoreGameByName({ state, commit }, gameName) {
             const foundGame = state.games.find(game => getGameDisplayName(game) === gameName);
             if(foundGame != null) {
                 commit('addIgnoredGame', foundGame.id);
