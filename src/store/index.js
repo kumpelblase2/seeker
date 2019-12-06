@@ -7,11 +7,11 @@ import { getGameDisplayName, getTagDisplayName } from "./func";
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
     reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames }) => ({
-        tags,
+        tags: tags.filter(tag => ignoredTags.includes(tag.tag_id)),
         ignoredTags,
         ignoredStreams,
-        games,
-        streamNames,
+        games: games.filter(game => ignoredGames.includes(game.id)),
+        streamNames: streamNames.filter(stream => ignoredStreams.includes(stream.id)),
         ignoredGames
     })
 });
