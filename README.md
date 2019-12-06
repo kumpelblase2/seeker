@@ -21,3 +21,26 @@ $ npm run serve
 ```
 
 Which starts it locally and you can access it via `http://localhost:8080`.
+
+## Deploying to GitHub Pages
+
+You want to have your own version deployed to github pages (to reference in PR for example)? This can be easily done. Make sure
+ you have everything commit to master to not lose any changes.
+
+First, create a `gh-pages` branch using `git checkout --orphan gh-pages` and make an initial commit by `git commit --allow
+-empty -m "Init"`. Go back to master ( `git checkout master` ) and now we add the `gh-pages` branch into the `dist` folder by
+ using git worktree: `git worktree add dist gh-pages`. Make sure that you don't have a `dist` directory so delete it if
+ necessary. When we now run `npm run build`, it will create a production build inside the `dist` directory. Lastly, change into
+ that directory, commit the changes and push them. Shortly after, you can access it under 
+ `<your-github-username>.github.io/seeker`. The full script is this:
+
+```shell script
+$ git checkout --orphan gh-pages
+$ git commit --allow-empty -m "Init"
+$ git checkout master
+$ git worktree add dist gh-pages
+$ npm run build
+$ cd dist
+$ git commit
+$ git push origin gh-pages
+```
