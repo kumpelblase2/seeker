@@ -21,9 +21,10 @@ export function getStreams(cursor = null) {
 
 export function getTags(tagIds = [], cursor = null) {
     if(cursor != null) {
-        return axios.get(`/tags/streams?${asList('tag_id', tagIds)}&after=${cursor}`).then(response => response.data);
+        return axios.get(`/tags/streams?first=100&${asList('tag_id', tagIds)}&after=${cursor}`)
+            .then(response => response.data);
     } else {
-        return axios.get(`/tags/streams?${asList('tag_id', tagIds)}`).then(response => response.data);
+        return axios.get(`/tags/streams?first=100&${asList('tag_id', tagIds)}`).then(response => response.data);
     }
 }
 

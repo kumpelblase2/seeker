@@ -4,6 +4,8 @@ import VuexPersistence from 'vuex-persist'
 import * as twitch from "../api/twitch";
 import { getGameDisplayName, getTagDisplayName } from "./func";
 
+const TAG_PAGE_SIZE = 100;
+
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
     reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames }) => ({
@@ -130,14 +132,17 @@ export default new Vuex.Store({
         },
         async loadTags({ commit, state }, tagIds) {
             let cursor = null;
+            let offset = 0;
             while(true) {
-                const response = await twitch.getTags(tagIds, cursor);
+                if(offset * TAG_PAGE_SIZE >= tagIds.length) {
+                    return;
+                }
+
+                const response = await twitch.getTags(tagIds.slice(offset * TAG_PAGE_SIZE, TAG_PAGE_SIZE), cursor);
                 const tags = response.data;
                 cursor = response.pagination.cursor;
                 commit('addTags', tags);
-                if(tags.length < 99) {
-                    break;
-                }
+                offset += 1;
             }
         },
         async loadGames({ commit }, gameIds) {
