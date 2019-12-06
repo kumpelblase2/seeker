@@ -3,12 +3,16 @@
         <div class="filter-container">
             <FilterComponent/>
         </div>
-        <div v-for="stream in visibleStreams" class="stream-container">
-            <StreamCard :stream="stream"/>
-        </div>
-        <mugen-scroll :handler="loadNewStreams" :should-handle="!busy">
-            loading...
-        </mugen-scroll>
+        <b-row align-h="center">
+            <b-col v-for="stream in visibleStreams" :key="stream.id" class="stream-container">
+                <StreamCard :stream="stream"/>
+            </b-col>
+            <b-col class="stream-container">
+                <mugen-scroll :handler="loadNewStreams" :should-handle="!busy">
+                    loading...
+                </mugen-scroll>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -61,8 +65,8 @@
     }
 
     .stream-container {
-        width: 300px;
-        margin-bottom: 20px;
+        max-width: 300px;
+        margin-bottom: 15px;
     }
 
     .stream {
