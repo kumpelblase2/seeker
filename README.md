@@ -5,6 +5,9 @@ This is an alternative to the browse page on twitch. Twitch only allows "selecti
 project is about; providing a browse page that lets you _filter_ streams that you don't care about so you can _actually_ find 
 new and interesting streamers.
 
+## Live
+
+You can use the live version here: [https://blog.eternalwings.de/seeker/](https://blog.eternalwings.de/seeker/)
 
 ## Building and running
 
