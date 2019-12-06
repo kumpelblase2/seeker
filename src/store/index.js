@@ -40,6 +40,7 @@ export default new Vuex.Store({
         },
         addStreams(state, streams) {
             streams.forEach(stream => {
+                stream.tag_ids = stream.tag_ids || [];
                 const existing = state.streams.findIndex(existingStream => existingStream.user_id === stream.user_id);
                 if(existing >= 0) {
                     Object.assign(state.streams[existing], stream);
