@@ -9,7 +9,7 @@ const TAG_PAGE_SIZE = 100;
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
     reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames }) => ({
-        tags: tags.filter(tag => ignoredTags.includes(tag.tag_id)),
+        tags: tags.filter(tag => ignoredTags.includes(tag.tag_id) || tag.is_auto),
         ignoredTags,
         ignoredStreams,
         games: games.filter(game => ignoredGames.includes(game.id)),
