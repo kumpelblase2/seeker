@@ -9,7 +9,8 @@
                     <StreamCard :stream="stream"/>
                 </b-col>
                 <b-col class="stream-container">
-                    <mugen-scroll :handler="loadNewStreams" :should-handle="!busy" scroll-container="streamList">
+                    <mugen-scroll ref="scroll" :handler="loadNewStreams" :should-handle="!busy" handle-on-mount
+                                  scroll-container="streamList">
                         loading...
                     </mugen-scroll>
                 </b-col>
@@ -24,21 +25,20 @@
     import FilterComponent from "../components/FilterComponent";
     import MugenScroll from 'vue-mugen-scroll'
 
+    function sleep(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
+    }
+
     export default {
         name: 'Browse',
         components: { FilterComponent, StreamCard, MugenScroll },
         data() {
             return {
-                busy: true
+                busy: false
             };
         },
         computed: {
             ...mapGetters(['visibleStreams', 'getGame', 'hasTag', 'hasGame'])
-        },
-        mounted() {
-            this.loadStreams().then(() => {
-                this.busy = false;
-            })
         },
         methods: {
             ...mapActions(['loadStreams']),
@@ -46,6 +46,10 @@
                 this.busy = true;
                 this.loadStreams().then(() => {
                     this.busy = false
+                }).then(() => sleep(500)).then(() => {
+                    if(!this.busy) {
+                        this.$refs.scroll.checkInView();
+                    }
                 });
             }
         }
