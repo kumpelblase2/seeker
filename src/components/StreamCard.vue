@@ -2,6 +2,12 @@
     <div style="width: 100%" @mouseenter="hover = true" @mouseleave="hover = false">
         <a :href="streamLink">
             <b-img-lazy class="stream-thumbnail" :src="thumbnail"></b-img-lazy>
+            <b-row v-show="hover" class="card-img-overlay image-overlay">
+                <div class="flex-grow-1"></div>
+                <b-btn pill variant="outline-light" size="sm" @click.prevent="ignoreStream">
+                    <md-eye-off-icon></md-eye-off-icon>
+                </b-btn>
+            </b-row>
             <h6 class="stream-title" :title="stream.title">{{stream.title}}</h6>
         </a>
         <p class="stream-username">{{stream.user_name}} - {{formattedViewers(stream.viewer_count)}} Viewers</p>
@@ -9,18 +15,17 @@
         <div class="stream-tags">
             <b-badge v-for="tagId in stream.tag_ids" variant="light" :key="tagId">{{getTagDisplayName(tagId)}}</b-badge>
         </div>
-        <div class="actions" v-if="hover">
-            <b-button variant="outline-light" block @click="ignoreStream">Ignore</b-button>
-        </div>
     </div>
 </template>
 
 <script>
     import { mapGetters, mapMutations } from "vuex";
     import { getGameDisplayName, getTagDisplayName } from "../store/func";
+    import MdEyeOffIcon from 'vue-ionicons/dist/md-eye-off.vue'
 
     export default {
         name: "StreamCard",
+        components: { MdEyeOffIcon },
         props: ['stream'],
         data() {
             return {
@@ -75,6 +80,12 @@
 
     p {
         margin: 0;
+    }
+
+    .image-overlay {
+        height: 10%;
+        max-height: 10%;
+        padding-top: 0.75rem !important;
     }
 
     .stream-username {

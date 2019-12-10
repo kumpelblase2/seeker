@@ -31,6 +31,10 @@
         padding-left: 5px;
         padding-right: 5px;
     }
+
+    .btn > .ion {
+        padding-top: 33%;
+    }
 </style>
 <script>
     import Browse from "./views/Browse";
