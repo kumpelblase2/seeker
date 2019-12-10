@@ -1,18 +1,20 @@
 <template>
     <div class="browse">
-        <div class="filter-container">
+        <b-col class="filter-container flex-grow-0">
             <FilterComponent/>
-        </div>
-        <b-row align-h="center">
-            <b-col v-for="stream in visibleStreams" :key="stream.id" class="stream-container">
-                <StreamCard :stream="stream"/>
-            </b-col>
-            <b-col class="stream-container">
-                <mugen-scroll :handler="loadNewStreams" :should-handle="!busy">
-                    loading...
-                </mugen-scroll>
-            </b-col>
-        </b-row>
+        </b-col>
+        <b-col class="streams-container flex-grow-1" ref="streamList">
+            <b-row class="no-padding" align-h="center" justify-content="between">
+                <b-col v-for="stream in visibleStreams" :key="stream.id" class="stream-container">
+                    <StreamCard :stream="stream"/>
+                </b-col>
+                <b-col class="stream-container">
+                    <mugen-scroll :handler="loadNewStreams" :should-handle="!busy" scroll-container="streamList">
+                        loading...
+                    </mugen-scroll>
+                </b-col>
+            </b-row>
+        </b-col>
     </div>
 </template>
 
@@ -52,16 +54,24 @@
 
 <style>
     .browse {
+        height: 100%;
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
         justify-content: space-around;
+        padding-top: 10px;
     }
 
     .filter-container {
-        width: 100%;
+        max-width: 15%;
+        height: 100%;
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+
+    .streams-container {
+        max-height: 100%;
+        overflow-y: scroll;
     }
 
     .stream-container {

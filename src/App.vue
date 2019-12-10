@@ -1,22 +1,40 @@
 <template>
-  <div id="app">
-      <Browse/>
-  </div>
+    <div id="app">
+        <Browse/>
+    </div>
 </template>
 
 <style>
-body {
-    background: rgba(0, 0, 0, 0.8);
-    color: rgb(239, 239, 241);
-}
+    #app {
+        height: 100%;
+    }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+    html, body {
+        height: 100%;
+    }
+
+    body {
+        background: rgba(0, 0, 0, 0.8);
+        color: rgb(239, 239, 241);
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    .col {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 </style>
 <script>
     import Browse from "./views/Browse";
+
     export default {
         components: { Browse }
     }
