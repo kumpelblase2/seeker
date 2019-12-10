@@ -6,9 +6,8 @@
                     <b-input class="col mb-2" type="text" v-model="streamName" placeholder="Stream to ignore"
                              @keyup.enter="ignoreStream"/>
                     <b-row>
-                        <b-badge v-for="streamId in ignoredStreams" :key="streamId">
-                            {{streamDisplayName(streamId)}}
-                            <b-link @click="removeIgnoredStream(streamId)">X</b-link>
+                        <b-badge v-for="streamId in ignoredStreams" :key="streamId" @click="removeIgnoredStream(streamId)">
+                            <span class="remove-on-hover">{{streamDisplayName(streamId)}}</span>
                         </b-badge>
                     </b-row>
                 </div>
@@ -16,9 +15,8 @@
                     <b-input class="col mb-2" type="text" v-model="tagName" placeholder="Tag/language to ignore"
                              @keyup.enter="ignoreTag"/>
                     <b-row>
-                        <b-badge v-for="tagId in ignoredTags" :key="tagId">
-                            {{tagDisplayName(tagId)}}
-                            <b-link @click="removeIgnoredTag(tagId)">X</b-link>
+                        <b-badge v-for="tagId in ignoredTags" :key="tagId" @click="removeIgnoredTag(tagId)">
+                            <span class="remove-on-hover">{{tagDisplayName(tagId)}}</span>
                         </b-badge>
                     </b-row>
                 </div>
@@ -26,9 +24,8 @@
                     <b-input class="col mb-2" type="text" v-model="gameName" placeholder="Game to ignore"
                              @keyup.enter="ignoreGame"/>
                     <b-row>
-                        <b-badge v-for="gameId in ignoredGames" :key="gameId">
-                            {{gameDisplayName(gameId)}}
-                            <b-link @click="removeIgnoredGame(gameId)">X</b-link>
+                        <b-badge v-for="gameId in ignoredGames" :key="gameId" @click="removeIgnoredGame(gameId)">
+                            <span class="remove-on-hover">{{gameDisplayName(gameId)}}</span>
                         </b-badge>
                     </b-row>
                 </div>
@@ -105,5 +102,23 @@
     .filter-third {
         max-height: 33%;
         min-height: 33%;
+    }
+
+    .badge > .remove-on-hover {
+        cursor: pointer;
+    }
+
+    .remove-on-hover {
+        position: relative;
+        display: inline-block;
+    }
+
+    .remove-on-hover:hover::before {
+        content: '';
+        border-bottom: 2px solid #6c757d;
+        width: 100%;
+        position: absolute;
+        right: 0;
+        top: 50%;
     }
 </style>
