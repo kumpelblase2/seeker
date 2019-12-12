@@ -95,10 +95,6 @@
         max-width: 25vw;
     }
 
-    .badge {
-        margin-right: 3px;
-    }
-
     .filter-third {
         max-height: 33%;
         min-height: 33%;

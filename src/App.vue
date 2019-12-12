@@ -35,6 +35,11 @@
     .btn > .ion {
         padding-top: 33%;
     }
+
+    .badge {
+        margin-right: 3px;
+        margin-bottom: 2px;
+    }
 </style>
 <script>
     import Browse from "./views/Browse";
