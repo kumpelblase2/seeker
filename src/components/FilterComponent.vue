@@ -2,7 +2,7 @@
     <b-col class="h-100">
         <b-row class="h-100">
             <b-col v-if="display" class="h-100 outer-container">
-                <div class="filter-third">
+                <b-row class="w-100 mb-5">
                     <b-input class="col mb-2" type="text" v-model="streamName" placeholder="Stream to ignore"
                              @keyup.enter="ignoreStream"/>
                     <b-row>
@@ -10,8 +10,8 @@
                             <span class="remove-on-hover">{{streamDisplayName(streamId)}}</span>
                         </b-badge>
                     </b-row>
-                </div>
-                <div class="filter-third">
+                </b-row>
+                <b-row class="w-100 mb-5">
                     <b-input class="col mb-2" type="text" v-model="tagName" placeholder="Tag/language to ignore"
                              @keyup.enter="ignoreTag"/>
                     <b-row>
@@ -19,8 +19,8 @@
                             <span class="remove-on-hover">{{tagDisplayName(tagId)}}</span>
                         </b-badge>
                     </b-row>
-                </div>
-                <div class="filter-third">
+                </b-row>
+                <b-row class="w-100 mb-5">
                     <b-input class="col mb-2" type="text" v-model="gameName" placeholder="Game to ignore"
                              @keyup.enter="ignoreGame"/>
                     <b-row>
@@ -28,7 +28,7 @@
                             <span class="remove-on-hover">{{gameDisplayName(gameId)}}</span>
                         </b-badge>
                     </b-row>
-                </div>
+                </b-row>
             </b-col>
             <b-col class="h-100 align-items-stretch" style="max-width: 40px">
                 <b-btn variant="outline-light" @click="toggleExpand">{{expandClose}}</b-btn>
@@ -93,11 +93,6 @@
     .outer-container {
         width: 25vw;
         max-width: 25vw;
-    }
-
-    .filter-third {
-        max-height: 33%;
-        min-height: 33%;
     }
 
     .badge > .remove-on-hover {
