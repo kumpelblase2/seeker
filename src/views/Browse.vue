@@ -8,10 +8,10 @@
                 <b-col v-for="stream in visibleStreams" :key="stream.id" class="stream-container">
                     <StreamCard :stream="stream"/>
                 </b-col>
-                <b-col class="stream-container">
+                <b-col class="stream-container" style="width: 300px">
                     <mugen-scroll ref="scroll" :handler="loadNewStreams" :should-handle="!busy" handle-on-mount
                                   scroll-container="streamList">
-                        loading...
+                        <b-btn block :disabled="this.busy" @click="loadNewStreams">{{loadButtonText}}</b-btn>
                     </mugen-scroll>
                 </b-col>
             </b-row>
@@ -38,7 +38,10 @@
             };
         },
         computed: {
-            ...mapGetters(['visibleStreams', 'getGame', 'hasTag', 'hasGame'])
+            ...mapGetters(['visibleStreams', 'getGame', 'hasTag', 'hasGame']),
+            loadButtonText() {
+                return this.busy ? "Loading..." : "Load more";
+            }
         },
         methods: {
             ...mapActions(['loadStreams']),
