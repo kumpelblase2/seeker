@@ -11,21 +11,16 @@ function asList(paramName, values) {
     return values.map(value => paramName + "=" + value).join("&");
 }
 
-export function getStreams(cursor = null) {
-    if(cursor != null) {
-        return axios.get(`/streams?first=50&after=${cursor}`).then(response => response.data);
-    } else {
-        return axios.get('/streams?first=50').then(response => response.data);
-    }
+export function getStreams(cursor = null, gameId = null) {
+    const cursorParam = cursor != null ? "&after=" + cursor : "";
+    const gameParam = gameId != null ? "&game_id=" + gameId : "";
+    return axios.get(`/streams?first=50${cursorParam}${gameParam}`).then(response => response.data);
 }
 
 export function getTags(tagIds = [], cursor = null) {
-    if(cursor != null) {
-        return axios.get(`/tags/streams?first=100&${asList('tag_id', tagIds)}&after=${cursor}`)
-            .then(response => response.data);
-    } else {
-        return axios.get(`/tags/streams?first=100&${asList('tag_id', tagIds)}`).then(response => response.data);
-    }
+    const cursorParam = cursor != null ? "&after=" + cursor : "";
+    const tagsParam = "&" + asList('tag_id', tagIds);
+    return axios.get(`/tags/streams?first=100${tagsParam}${cursorParam}`).then(response => response.data);
 }
 
 export function getGames(gameIds) {

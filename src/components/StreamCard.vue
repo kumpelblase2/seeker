@@ -11,7 +11,7 @@
             <h6 class="stream-title" :title="stream.title">{{stream.title}}</h6>
         </a>
         <p class="stream-username">{{stream.user_name}} - {{formattedViewers(stream.viewer_count)}} Viewers</p>
-        <p class="stream-game">{{gameDisplayName(stream.game_id)}}</p>
+        <a href="#" class="stream-game" @click="selectGame(stream.game_id)">{{gameDisplayName(stream.game_id)}}</a>
         <div class="stream-tags">
             <b-badge v-for="tagId in stream.tag_ids" variant="light" :key="tagId">{{getTagDisplayName(tagId)}}</b-badge>
         </div>
@@ -64,6 +64,9 @@
                         return aboveThousand + "." + subThousand + "k";
                     }
                 }
+            },
+            selectGame(gameId) {
+                this.$emit('select-game', gameId);
             }
         }
     }

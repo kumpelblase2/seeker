@@ -23,6 +23,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         cursor: null,
+        selectedGameId: null,
         tags: [],
         streamNames: [], // [{name, id}]
         streams: [],
@@ -90,6 +91,15 @@ export default new Vuex.Store({
             if(index >= 0) {
                 state.ignoredGames.splice(index, 1);
             }
+        },
+        selectGame(state, gameId) {
+            if(state.selectedGameId !== gameId) {
+                state.cursor = null;
+                while(state.streams.length > 0) {
+                    state.streams.pop();
+                }
+            }
+            state.selectedGameId = gameId;
         }
     },
     getters: {
@@ -97,7 +107,7 @@ export default new Vuex.Store({
             return state.streams.filter(stream => {
                 return state.ignoredTags.every(tag => !stream.tag_ids.includes(tag)) &&
                     state.ignoredStreams.every(streamId => streamId !== stream.user_id) &&
-                    state.ignoredGames.every(gameId => gameId !== stream.game_id);
+                    (state.selectedGameId != null || state.ignoredGames.every(gameId => gameId !== stream.game_id));
             });
         },
         tagById(state) {
@@ -114,11 +124,15 @@ export default new Vuex.Store({
         },
         hasGame(state) {
             return (id) => state.games.find(game => game.game_id === id) != null;
+        },
+        selectedGame(state) {
+            return state.games.find(game => game.id === state.selectedGameId);
         }
     },
     actions: {
-        async loadStreams({ commit, state, dispatch, getters }) {
-            const response = await twitch.getStreams(state.cursor);
+        async loadStreams({ commit, state, dispatch, getters }, gameId = null) {
+            commit('selectGame', gameId);
+            const response = await twitch.getStreams(state.cursor, gameId);
             const streams = response.data;
             commit('updateCursor', response.pagination.cursor);
             commit('addStreams', streams);

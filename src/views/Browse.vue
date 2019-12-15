@@ -4,9 +4,13 @@
             <FilterComponent/>
         </b-col>
         <b-col class="streams-container flex-grow-1" ref="streamList">
+            <b-row v-if="selectedGame" class="game-filter p-2 m-2" align-h="center">
+                <i>Viewing only streams for {{gameDisplayName(selectedGame)}}</i>
+                <b-btn variant="outline-light" class="ml-3" size="sm" @click="changeGame(null)">Clear</b-btn>
+            </b-row>
             <b-row class="no-padding" align-h="center" justify-content="between">
                 <b-col v-for="stream in visibleStreams" :key="stream.id" class="stream-container">
-                    <StreamCard :stream="stream"/>
+                    <StreamCard :stream="stream" @select-game="changeGame"/>
                 </b-col>
                 <b-col class="stream-container" style="width: 300px">
                     <mugen-scroll ref="scroll" :handler="loadNewStreams" :should-handle="!busy" handle-on-mount
@@ -20,10 +24,11 @@
 </template>
 
 <script>
-    import { mapActions, mapGetters } from "vuex";
+    import { mapActions, mapGetters, mapMutations } from "vuex";
     import StreamCard from "../components/StreamCard";
     import FilterComponent from "../components/FilterComponent";
     import MugenScroll from 'vue-mugen-scroll'
+    import { getGameDisplayName } from "../store/func";
 
     function sleep(time) {
         return new Promise(resolve => setTimeout(resolve, time));
@@ -38,16 +43,27 @@
             };
         },
         computed: {
-            ...mapGetters(['visibleStreams', 'getGame', 'hasTag', 'hasGame']),
+            ...mapGetters(['visibleStreams', 'getGame', 'hasTag', 'hasGame', 'selectedGame']),
             loadButtonText() {
                 return this.busy ? "Loading..." : "Load more";
+            },
+            selectedGameId() {
+                return (this.selectedGame || {}).id;
             }
         },
         methods: {
             ...mapActions(['loadStreams']),
+            ...mapMutations(['selectGame']),
+            changeGame(gameId) {
+                this.selectGame(gameId);
+                this.loadNewStreams();
+            },
+            gameDisplayName(game) {
+                return getGameDisplayName(game);
+            },
             loadNewStreams() {
                 this.busy = true;
-                this.loadStreams().then(() => {
+                this.loadStreams(this.selectedGameId).then(() => {
                     this.busy = false
                 }).then(() => sleep(500)).then(() => {
                     if(!this.busy) {
@@ -74,6 +90,10 @@
         height: 100%;
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+
+    .game-filter {
+        background-color: #414646;
     }
 
     .streams-container {
