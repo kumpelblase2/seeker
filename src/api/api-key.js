@@ -1,1 +1,1 @@
-export const TWITCH_API_CLIENT_ID = "INSERT_KEY_HERE";
+export const TWITCH_API_CLIENT_ID = __TWITCH_CLIENT_ID__;

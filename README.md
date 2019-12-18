@@ -12,12 +12,13 @@ You can use the live version here: [https://blog.eternalwings.de/seeker/](https:
 ## Building and running
 
 First, you need an API client ID from Twitch, which you can get by creating an application 
-[here](https://dev.twitch.tv/console/apps/create). You can then paste inside `src/api/api-key.js`.
+[here](https://dev.twitch.tv/console/apps/create). You can then provide it inside the environment 
+variable `TWITCH_CLIENT_ID` when starting the application.
 
 Then you can install the required dependencies using `npm ci` and start it using `npm run serve`:
 ```shell script
 $ npm ci
-$ npm run serve
+$ TWITCH_CLIENT_ID=<your-key-here> npm run serve
 ```
 
 Which starts it locally and you can access it via `http://localhost:8080`.
