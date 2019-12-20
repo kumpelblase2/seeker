@@ -8,7 +8,7 @@ module.exports = {
     configureWebpack: {
         plugins: [
             new webpack.DefinePlugin({
-                __TWITCH_CLIENT_ID__: process.env['TWITCH_CLIENT_ID']
+                __TWITCH_CLIENT_ID__: JSON.stringify(process.env.TWITCH_CLIENT_ID)
             })
         ]
     }
