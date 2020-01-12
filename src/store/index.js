@@ -8,13 +8,14 @@ const TAG_PAGE_SIZE = 100;
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
-    reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames }) => ({
+    reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames, ignoreNoGame }) => ({
         tags: tags.filter(tag => ignoredTags.includes(tag.tag_id) || tag.is_auto),
         ignoredTags,
         ignoredStreams,
         games: games.filter(game => ignoredGames.includes(game.id)),
         streamNames: streamNames.filter(stream => ignoredStreams.includes(stream.id)),
-        ignoredGames
+        ignoredGames,
+        ignoreNoGame
     })
 });
 
@@ -30,7 +31,8 @@ export default new Vuex.Store({
         games: [],
         ignoredTags: [],
         ignoredStreams: [],
-        ignoredGames: []
+        ignoredGames: [],
+        ignoreNoGame: false
     },
     mutations: {
         updateCursor(state, cursor) {
@@ -100,6 +102,9 @@ export default new Vuex.Store({
                 }
             }
             state.selectedGameId = gameId;
+        },
+        ignoreStreamsWithoutGame(state, value) {
+            state.ignoreNoGame = value;
         }
     },
     getters: {
@@ -107,6 +112,7 @@ export default new Vuex.Store({
             return state.streams.filter(stream => {
                 return state.ignoredTags.every(tag => !stream.tag_ids.includes(tag)) &&
                     state.ignoredStreams.every(streamId => streamId !== stream.user_id) &&
+                    (!state.ignoreNoGame || (stream.game_id != null && stream.game_id.length > 0)) &&
                     (state.selectedGameId != null || state.ignoredGames.every(gameId => gameId !== stream.game_id));
             });
         },

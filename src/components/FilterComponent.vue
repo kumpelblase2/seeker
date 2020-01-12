@@ -23,6 +23,7 @@
                 <b-row class="w-100 mb-5">
                     <b-input class="col mb-2" type="text" v-model="gameName" placeholder="Game to ignore"
                              @keyup.enter="ignoreGame"/>
+                    <b-checkbox :checked="ignoreNoGame" @change="ignoreStreamsWithoutGame($event)">Ignore streams without category</b-checkbox>
                     <b-row>
                         <b-badge v-for="gameId in ignoredGames" :key="gameId" @click="removeIgnoredGame(gameId)">
                             <span class="remove-on-hover">{{gameDisplayName(gameId)}}</span>
@@ -52,7 +53,7 @@
             };
         },
         computed: {
-            ...mapState(['ignoredTags', 'ignoredStreams', 'ignoredGames']),
+            ...mapState(['ignoredTags', 'ignoredStreams', 'ignoredGames', 'ignoreNoGame']),
             ...mapGetters(['tagById', 'getStreamName', 'getGame']),
             expandClose() {
                 return this.display ? '<<' : '>>';
@@ -60,7 +61,7 @@
         },
         methods: {
             ...mapActions(['ignoreStreamByName', 'ignoreTagByName', 'ignoreGameByName']),
-            ...mapMutations(['removeIgnoredStream', 'removeIgnoredTag', 'removeIgnoredGame']),
+            ...mapMutations(['removeIgnoredStream', 'removeIgnoredTag', 'removeIgnoredGame','ignoreStreamsWithoutGame']),
             ignoreStream() {
                 this.ignoreStreamByName(this.streamName);
                 this.streamName = "";
