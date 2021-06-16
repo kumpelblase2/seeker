@@ -1,6 +1,11 @@
 <template>
     <div id="app">
+      <template v-if="isAuthenticated">
         <Browse/>
+      </template>
+      <template v-else>
+        <Login />
+      </template>
     </div>
 </template>
 
@@ -23,15 +28,6 @@
         text-decoration: none;
     }
 
-    .row {
-        margin: 0;
-    }
-
-    .col {
-        padding-left: 5px;
-        padding-right: 5px;
-    }
-
     .btn > .ion {
         padding-top: 33%;
     }
@@ -42,9 +38,21 @@
     }
 </style>
 <script>
+    import { assignToken } from "@/api/twitch";
+    import { mapGetters } from "vuex";
     import Browse from "./views/Browse";
+    import Login from './views/Login';
 
     export default {
-        components: { Browse }
+        components: { Browse, Login },
+        computed: {
+          ...mapGetters(['isAuthenticated', 'userToken'])
+        },
+        beforeMount() {
+          debugger;
+          if(this.isAuthenticated) {
+            assignToken(this.userToken);
+          }
+        }
     }
 </script>

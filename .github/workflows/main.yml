@@ -20,6 +20,7 @@ jobs:
        run: npm run build
        env:
          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_KEY }}
+         TWITCH_REDIRECT_URL: ${{ secrets.TWITCH_REDIRECT_URL }}
      - name: Deploy
        uses: peaceiris/actions-gh-pages@v2
        env:

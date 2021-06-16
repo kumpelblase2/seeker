@@ -13,7 +13,7 @@
         <p class="stream-username">{{stream.user_name}} - {{formattedViewers(stream.viewer_count)}} Viewers</p>
         <a href="#" class="stream-game" @click="selectGame(stream.game_id)">{{gameDisplayName(stream.game_id)}}</a>
         <div class="stream-tags">
-            <b-badge v-for="tagId in stream.tag_ids" variant="light" :key="tagId">{{getTagDisplayName(tagId)}}</b-badge>
+            <b-badge v-for="tagId in availableTags" variant="light" :key="tagId">{{getTagDisplayName(tagId)}}</b-badge>
         </div>
     </div>
 </template>
@@ -33,12 +33,15 @@
             };
         },
         computed: {
-            ...mapGetters(['getGame', 'tagById']),
+            ...mapGetters(['getGame', 'tagById', 'hasTag']),
             streamLink() {
                 return "https://twitch.tv/" + this.stream.user_name;
             },
             thumbnail() {
                 return this.stream.thumbnail_url.replace('{width}', 1280).replace('{height}', 780);
+            },
+            availableTags() {
+                return this.stream.tag_ids.filter(tag => this.hasTag(tag));
             }
         },
         methods: {

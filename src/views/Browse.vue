@@ -1,9 +1,7 @@
 <template>
     <div class="browse">
-        <b-col class="filter-container flex-grow-0">
-            <FilterComponent/>
-        </b-col>
-        <b-col class="streams-container flex-grow-1" ref="streamList">
+        <FilterComponent/>
+        <b-col class="streams-container flex-grow-2" ref="streamList">
             <b-row v-if="selectedGame" class="game-filter p-2 m-2" align-h="center">
                 <i>Viewing only streams for {{gameDisplayName(selectedGame)}}</i>
                 <b-btn variant="outline-light" class="ml-3" size="sm" @click="changeGame(null)">Clear</b-btn>
@@ -28,7 +26,7 @@
     import StreamCard from "../components/StreamCard";
     import FilterComponent from "../components/FilterComponent";
     import MugenScroll from 'vue-mugen-scroll'
-    import { getGameDisplayName } from "../store/func";
+    import { getGameDisplayName } from "@/store/func";
 
     function sleep(time) {
         return new Promise(resolve => setTimeout(resolve, time));
@@ -83,13 +81,6 @@
         flex-direction: row;
         justify-content: space-around;
         padding-top: 10px;
-    }
-
-    .filter-container {
-        max-width: 15%;
-        height: 100%;
-        padding-top: 10px;
-        padding-bottom: 10px;
     }
 
     .game-filter {

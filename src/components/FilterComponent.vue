@@ -1,46 +1,49 @@
 <template>
-    <b-col class="h-100">
-        <b-row class="h-100">
-            <b-col v-if="display" class="h-100 outer-container">
-                <b-row class="w-100 mb-5">
-                    <b-input class="col mb-2" type="text" v-model="streamName" placeholder="Stream to ignore"
-                             @keyup.enter="ignoreStream"/>
-                    <b-row>
-                        <b-badge v-for="streamId in ignoredStreams" :key="streamId" @click="removeIgnoredStream(streamId)">
-                            <span class="remove-on-hover">{{streamDisplayName(streamId)}}</span>
-                        </b-badge>
-                    </b-row>
-                </b-row>
-                <b-row class="w-100 mb-5">
-                    <b-input class="col mb-2" type="text" v-model="tagName" placeholder="Tag/language to ignore"
-                             @keyup.enter="ignoreTag"/>
-                    <b-row>
-                        <b-badge v-for="tagId in ignoredTags" :key="tagId" @click="removeIgnoredTag(tagId)">
-                            <span class="remove-on-hover">{{tagDisplayName(tagId)}}</span>
-                        </b-badge>
-                    </b-row>
-                </b-row>
-                <b-row class="w-100 mb-5">
-                    <b-input class="col mb-2" type="text" v-model="gameName" placeholder="Game to ignore"
-                             @keyup.enter="ignoreGame"/>
-                    <b-checkbox :checked="ignoreNoGame" @change="ignoreStreamsWithoutGame($event)">Ignore streams without category</b-checkbox>
-                    <b-row>
-                        <b-badge v-for="gameId in ignoredGames" :key="gameId" @click="removeIgnoredGame(gameId)">
-                            <span class="remove-on-hover">{{gameDisplayName(gameId)}}</span>
-                        </b-badge>
-                    </b-row>
-                </b-row>
-            </b-col>
-            <b-col class="h-100 align-items-stretch" style="max-width: 40px">
-                <b-btn variant="outline-light" @click="toggleExpand">{{expandClose}}</b-btn>
-            </b-col>
-        </b-row>
-    </b-col>
+  <b-col class="h-100 p-2 pl-3 filter-container" :class="{ 'small-container': !display }">
+      <b-row class="mb-1 px-3">
+        <b-btn class="w-100" variant="outline-light" @click="toggleExpand">{{ expandClose }}</b-btn>
+      </b-row>
+      <b-col v-if="display" class="outer-container p-0">
+          <b-col class="w-100 mb-5 p-0">
+              <b-input class="col mb-2" type="text" v-model="streamName" placeholder="Stream to ignore"
+                       @keyup.enter="ignoreStream" />
+              <b-row class="px-3">
+                  <b-badge v-for="streamId in ignoredStreams" :key="streamId" @click="removeIgnoredStream(streamId)">
+                      <span class="remove-on-hover">{{streamDisplayName(streamId)}}</span>
+                  </b-badge>
+              </b-row>
+          </b-col>
+          <b-col class="w-100 mb-5 p-0">
+              <b-input class="col mb-2" type="text" v-model="tagName" placeholder="Tag/language to ignore"
+                       @keyup.enter="ignoreTag" list="tagList" autocomplete="off"/>
+              <datalist id="tagList">
+                <template v-for="tag in allTags">
+                  <option :value="tagDisplayName(tag)"></option>
+                </template>
+              </datalist>
+              <b-row class="px-3">
+                  <b-badge v-for="tagId in ignoredTags" :key="tagId" @click="removeIgnoredTag(tagId)">
+                      <span class="remove-on-hover">{{tagDisplayName(tagId)}}</span>
+                  </b-badge>
+              </b-row>
+          </b-col>
+          <b-col class="w-100 mb-5 p-0">
+              <b-input class="col mb-2" type="text" v-model="gameName" placeholder="Game to ignore"
+                       @keyup.enter="ignoreGame"/>
+              <b-checkbox :checked="ignoreNoGame" @change="ignoreStreamsWithoutGame($event)">Ignore streams without category</b-checkbox>
+              <b-row class="px-3">
+                  <b-badge v-for="gameId in ignoredGames" :key="gameId" @click="removeIgnoredGame(gameId)">
+                      <span class="remove-on-hover">{{gameDisplayName(gameId)}}</span>
+                  </b-badge>
+              </b-row>
+          </b-col>
+      </b-col>
+  </b-col>
 </template>
 
 <script>
     import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-    import { getGameDisplayName, getTagDisplayName } from "../store/func";
+    import { getGameDisplayName, getTagDisplayName } from "@/store/func";
 
     export default {
         name: "FilterComponent",
@@ -54,7 +57,7 @@
         },
         computed: {
             ...mapState(['ignoredTags', 'ignoredStreams', 'ignoredGames', 'ignoreNoGame']),
-            ...mapGetters(['tagById', 'getStreamName', 'getGame']),
+            ...mapGetters(['tagById', 'getStreamName', 'getGame', 'allTags']),
             expandClose() {
                 return this.display ? '<<' : '>>';
             }
@@ -91,9 +94,14 @@
 </script>
 
 <style scoped>
-    .outer-container {
-        width: 25vw;
-        max-width: 25vw;
+    .filter-container {
+      max-width: min(30vw, 300px);
+      width: 100%;
+    }
+
+    .small-container {
+      max-width: max(5vw, 75px);
+      width: 100%;
     }
 
     .badge > .remove-on-hover {

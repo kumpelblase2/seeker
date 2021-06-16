@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
+import { assignToken } from "../api/twitch";
 import * as twitch from "../api/twitch";
 import { getGameDisplayName, getTagDisplayName } from "./func";
 
@@ -8,7 +9,8 @@ const TAG_PAGE_SIZE = 100;
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
-    reducer: ({ tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames, ignoreNoGame }) => ({
+    reducer: ({ user, tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames, ignoreNoGame }) => ({
+        user,
         tags: tags.filter(tag => ignoredTags.includes(tag.tag_id) || tag.is_auto),
         ignoredTags,
         ignoredStreams,
@@ -23,6 +25,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
+        user: null,
         cursor: null,
         selectedGameId: null,
         tags: [],
@@ -105,6 +108,16 @@ export default new Vuex.Store({
         },
         ignoreStreamsWithoutGame(state, value) {
             state.ignoreNoGame = value;
+        },
+        updateUser(state, { userData, tokenData }) {
+            state.user = {
+                expiry: tokenData.expiry,
+                token: tokenData.token,
+                data: userData
+            }
+        },
+        logoutUser(state) {
+            state.user = null;
         }
     },
     getters: {
@@ -131,8 +144,23 @@ export default new Vuex.Store({
         hasGame(state) {
             return (id) => state.games.find(game => game.game_id === id) != null;
         },
+        allTags(state) {
+            return state.tags.map(tag => tag.tag_id);
+        },
         selectedGame(state) {
             return state.games.find(game => game.id === state.selectedGameId);
+        },
+        userToken(state) {
+            return state.user.token;
+        },
+        isAuthenticated(state) {
+            const user = state.user;
+            if(!user) {
+                return false;
+            }
+
+            const expiry = user.expiry;
+            return expiry - Date.now() >= 0;
         }
     },
     actions: {
@@ -149,7 +177,16 @@ export default new Vuex.Store({
             dispatch('loadGames', games);
 
             const tags = [...new Set(streams.flatMap(stream => stream.tag_ids))].filter(tagId => !getters.hasTag(tagId));
-            dispatch('loadTags', tags);
+            await dispatch('loadTags', tags);
+            const stillMissingTags = tags.filter(tag => !getters.hasTag(tag));
+            const tagStreamMap = stillMissingTags.map(tag => {
+                const usedStream = streams.find(stream => stream.tag_ids.includes(tag));
+                return {
+                    stream: usedStream.id,
+                    tag: tag
+                }
+            });
+            dispatch('loadStreamTags', tagStreamMap);
         },
         async loadTags({ commit, state }, tagIds) {
             let cursor = null;
@@ -165,6 +202,9 @@ export default new Vuex.Store({
                 commit('addTags', tags);
                 offset += 1;
             }
+        },
+        async loadStreamTags({commit, state}, tagsWithStream) {
+            // TODO
         },
         async loadGames({ commit }, gameIds) {
             const response = await twitch.getGames(gameIds);
@@ -186,6 +226,23 @@ export default new Vuex.Store({
             const foundGame = state.games.find(game => getGameDisplayName(game) === gameName);
             if(foundGame != null) {
                 commit('addIgnoredGame', foundGame.id);
+            }
+        },
+        async doAuth({ state, commit }, token) {
+            try {
+                const validationResponse = await twitch.validateToken(token);
+                const userData = {
+                    id: validationResponse.user_id,
+                    name: validationResponse.login
+                }
+                const tokenData = {
+                    expiry: Date.now() + validationResponse.expires_in,
+                    token: token
+                }
+                assignToken(token);
+                commit('updateUser', { userData, tokenData });
+            } catch(ex) {
+                commit('logoutUser');
             }
         }
     },
