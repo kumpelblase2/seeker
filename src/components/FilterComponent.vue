@@ -43,7 +43,7 @@
 
 <script>
     import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-    import { getGameDisplayName, getTagDisplayName } from "@/store/func";
+    import { getGameDisplayName, getTagDisplayName } from "../store/func";
 
     export default {
         name: "FilterComponent",

@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { doLoginRedirect } from "@/api/twitch";
+import { doLoginRedirect } from "../api/twitch";
 import { mapActions } from "vuex";
 
 function parseAuthResponse(hash) {

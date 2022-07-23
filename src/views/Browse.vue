@@ -23,10 +23,10 @@
 
 <script>
     import { mapActions, mapGetters, mapMutations } from "vuex";
-    import StreamCard from "../components/StreamCard";
-    import FilterComponent from "../components/FilterComponent";
+    import StreamCard from "../components/StreamCard.vue";
+    import FilterComponent from "../components/FilterComponent.vue";
     import MugenScroll from 'vue-mugen-scroll'
-    import { getGameDisplayName } from "@/store/func";
+    import { getGameDisplayName } from "../store/func";
 
     function sleep(time) {
         return new Promise(resolve => setTimeout(resolve, time));

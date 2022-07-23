@@ -38,10 +38,10 @@
     }
 </style>
 <script>
-    import { assignToken } from "@/api/twitch";
+    import { assignToken } from "./api/twitch";
     import { mapGetters } from "vuex";
-    import Browse from "./views/Browse";
-    import Login from './views/Login';
+    import Browse from "./views/Browse.vue";
+    import Login from './views/Login.vue';
 
     export default {
         components: { Browse, Login },
