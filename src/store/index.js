@@ -9,7 +9,7 @@ const TAG_PAGE_SIZE = 100;
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
-    reducer: ({ user, tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames, ignoreNoGame }) => ({
+    reducer: ({ user, tags, ignoredTags, ignoredStreams, games, streamNames, ignoredGames, ignoreNoGame, ignoredTitles }) => ({
         user,
         tags: tags.filter(tag => ignoredTags.includes(tag.tag_id) || tag.is_auto),
         ignoredTags,
@@ -17,7 +17,8 @@ const vuexLocal = new VuexPersistence({
         games: games.filter(game => ignoredGames.includes(game.id)),
         streamNames: streamNames.filter(stream => ignoredStreams.includes(stream.id)),
         ignoredGames,
-        ignoreNoGame
+        ignoreNoGame,
+        ignoredTitles: ignoredTitles || []
     })
 });
 
@@ -35,7 +36,8 @@ export default new Vuex.Store({
         ignoredTags: [],
         ignoredStreams: [],
         ignoredGames: [],
-        ignoreNoGame: false
+        ignoreNoGame: false,
+        ignoredTitles: [],
     },
     mutations: {
         updateCursor(state, cursor) {
@@ -73,6 +75,11 @@ export default new Vuex.Store({
                 state.ignoredGames.push(gameId);
             }
         },
+        addIgnoredTitle(state, title) {
+            if(!state.ignoredTitles.includes(title)) {
+                state.ignoredTitles.push(title);
+            }
+        },
         addStreamNameLook(state, names) {
             const unknown = names.filter(({ _, id }) =>
                 state.streamNames.findIndex(nameMapping => nameMapping.id === id) < 0);
@@ -95,6 +102,12 @@ export default new Vuex.Store({
             const index = state.ignoredGames.findIndex(id => id === gameId);
             if(index >= 0) {
                 state.ignoredGames.splice(index, 1);
+            }
+        },
+        removeIgnoredTitle(state, title) {
+            const index = state.ignoredTitles.findIndex(id => id === title);
+            if(index >= 0) {
+                state.ignoredTitles.splice(index, 1);
             }
         },
         selectGame(state, gameId) {
@@ -126,7 +139,8 @@ export default new Vuex.Store({
                 return state.ignoredTags.every(tag => !stream.tag_ids.includes(tag)) &&
                     state.ignoredStreams.every(streamId => streamId !== stream.user_id) &&
                     (!state.ignoreNoGame || (stream.game_id != null && stream.game_id.length > 0)) &&
-                    (state.selectedGameId != null || state.ignoredGames.every(gameId => gameId !== stream.game_id));
+                    (state.selectedGameId != null || state.ignoredGames.every(gameId => gameId !== stream.game_id)) &&
+                    state.ignoredTitles.every(title => !stream.title.toLowerCase().includes(title.toLowerCase()));
             });
         },
         tagById(state) {
@@ -226,6 +240,11 @@ export default new Vuex.Store({
             const foundGame = state.games.find(game => getGameDisplayName(game) === gameName);
             if(foundGame != null) {
                 commit('addIgnoredGame', foundGame.id);
+            }
+        },
+        ignoreStreamByTitle({state, commit}, title) {
+            if(!state.ignoredTitles.some(existingTitle => existingTitle.toLowerCase() === title.toLowerCase())) {
+                state.ignoredTitles.push(title);
             }
         },
         async doAuth({ state, commit }, token) {

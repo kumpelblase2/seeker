@@ -37,6 +37,15 @@
                   </b-badge>
               </b-row>
           </b-col>
+          <b-col class="w-100 mb-5 p-0">
+              <b-input class="col mb-2" type="text" v-model="titleInput" placeholder="Match title text"
+                       @keyup.enter="ignoreTitle"/>
+              <b-row class="px-3">
+                  <b-badge v-for="title in ignoredTitles" :key="title" @click="removeIgnoredTitle(title)">
+                      <span class="remove-on-hover">{{ title }}</span>
+                  </b-badge>
+              </b-row>
+          </b-col>
       </b-col>
   </b-col>
 </template>
@@ -52,19 +61,20 @@
                 streamName: "",
                 tagName: "",
                 gameName: "",
+                titleInput: "",
                 display: true
             };
         },
         computed: {
-            ...mapState(['ignoredTags', 'ignoredStreams', 'ignoredGames', 'ignoreNoGame']),
+            ...mapState(['ignoredTags', 'ignoredStreams', 'ignoredGames', 'ignoreNoGame', 'ignoredTitles']),
             ...mapGetters(['tagById', 'getStreamName', 'getGame', 'allTags']),
             expandClose() {
                 return this.display ? '<<' : '>>';
             }
         },
         methods: {
-            ...mapActions(['ignoreStreamByName', 'ignoreTagByName', 'ignoreGameByName']),
-            ...mapMutations(['removeIgnoredStream', 'removeIgnoredTag', 'removeIgnoredGame','ignoreStreamsWithoutGame']),
+            ...mapActions(['ignoreStreamByName', 'ignoreTagByName', 'ignoreGameByName', 'ignoreStreamByTitle']),
+            ...mapMutations(['removeIgnoredStream', 'removeIgnoredTag', 'removeIgnoredGame','ignoreStreamsWithoutGame', 'removeIgnoredTitle']),
             ignoreStream() {
                 this.ignoreStreamByName(this.streamName);
                 this.streamName = "";
@@ -76,6 +86,10 @@
             ignoreGame() {
                 this.ignoreGameByName(this.gameName);
                 this.gameName = "";
+            },
+            ignoreTitle() {
+                this.ignoreStreamByTitle(this.titleInput);
+                this.titleInput = "";
             },
             tagDisplayName(tagId) {
                 return getTagDisplayName(this.tagById(tagId)) || tagId;
