@@ -121,4 +121,10 @@
         right: 0;
         top: 50%;
     }
+
+    .outer-container {
+        overflow-y: auto;
+        overflow-x: hidden;
+        max-height: calc(100% - 38px);
+    }
 </style>
